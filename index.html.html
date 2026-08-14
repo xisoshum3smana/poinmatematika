@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassPoint | Sistem Poin Kelas</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+*{box-sizing:border-box}
+body{margin:0;background:#f8f5f8;color:#2d2730;font-family:"DM Sans",sans-serif}
+button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+
+.screen{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{width:min(430px,100%);background:#fff;padding:38px;border-radius:28px;border:1px solid #eee5ef;box-shadow:0 25px 70px rgba(81,54,83,.08)}
+.logo{width:60px;height:60px;display:grid;place-items:center;border-radius:18px;background:#eadcf1;color:#75477c;font-size:28px;margin-bottom:20px}
+.eyebrow{margin:0 0 7px;color:#98709d;font-size:11px;font-weight:700;letter-spacing:3px}
+h1,h2,h3{margin-top:0}.login-card h1{font:700 32px "Playfair Display",serif;margin-bottom:8px}
+.muted{color:#918a93;font-size:14px}
+
+.tabs{display:flex;gap:4px;padding:4px;margin:25px 0;background:#f5f0f6;border-radius:13px}
+.tab{flex:1;padding:10px;border:0;border-radius:10px;background:transparent;color:#777}
+.tab.active{background:#fff;color:#693c70;font-weight:700;box-shadow:0 2px 9px rgba(0,0,0,.06)}
+
+label{display:block;margin:15px 0 7px;font-size:13px;font-weight:600}
+input{width:100%;padding:13px 14px;border:1px solid #e0d9e1;border-radius:12px;outline:0;background:#fff}
+input:focus{border-color:#a779aa;box-shadow:0 0 0 3px rgba(167,121,170,.1)}
+.primary{width:100%;padding:14px;margin-top:19px;border:0;border-radius:12px;background:#75477c;color:#fff;font-weight:700}
+.error{min-height:20px;margin-top:10px;color:#b64859;font-size:13px}
+.demo{text-align:center;margin-top:18px;color:#aaa;font-size:11px}
+
+.topbar{height:82px;display:flex;align-items:center;justify-content:space-between;padding:0 6%;background:#fff;border-bottom:1px solid #eee6ef}
+.topbar h2{margin:0;font:600 23px "Playfair Display",serif}
+.logout{padding:9px 16px;border:1px solid #ddd4df;border-radius:10px;background:#fff}
+.container{width:min(1100px,92%);margin:35px auto}
+
+.welcome{display:flex;align-items:center;justify-content:space-between;padding:30px;border-radius:27px;background:linear-gradient(135deg,#eadcf1,#f8edf5)}
+.welcome h1{margin:0;font:700 32px "Playfair Display",serif}
+.point-circle{width:125px;height:125px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;box-shadow:0 12px 30px rgba(105,70,110,.1)}
+.point-circle strong{color:#75477c;font-size:35px}.point-circle span{color:#999;font-size:10px;letter-spacing:2px}
+
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 14px}
+.section-title h3{margin:0}
+.history{overflow:hidden;border:1px solid #eee6ef;border-radius:20px;background:#fff}
+.history-item{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid #f0ebf1}
+.history-item:last-child{border:0}
+.delete-history{border:0;background:transparent;padding:5px;cursor:pointer;font-size:16px;opacity:.7}
+.delete-history:hover{opacity:1}
+.history-date{margin-top:5px;color:#999;font-size:12px}
+.plus{color:#38875f;font-weight:700}.minus{color:#b65262;font-weight:700}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.stat{padding:21px;border:1px solid #eee6ef;border-radius:18px;background:#fff}
+.stat span{display:block;margin-bottom:6px;color:#918a93;font-size:13px}.stat strong{font-size:27px}
+
+.panel{padding:20px;margin-bottom:20px;overflow:hidden;border:1px solid #eee6ef;border-radius:20px;background:#fff}
+.search{max-width:230px}.table-wrap{overflow:auto}
+table{width:100%;min-width:650px;border-collapse:collapse}
+th,td{padding:14px 10px;border-bottom:1px solid #f0ebf1;text-align:left}
+th{color:#948d96;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.manage{padding:8px 11px;border:1px solid #d9c9dc;border-radius:9px;background:#faf6fb;color:#693f70}
+.clear-history{padding:8px 11px;border:1px solid #e3c5cb;border-radius:9px;background:#fff7f8;color:#b65262;margin-left:5px}
+
+.rank-item{display:flex;align-items:center;gap:15px;padding:14px 5px;border-bottom:1px solid #f0ebf1}
+.rank-item:last-child{border:0}.rank-number{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#f1e8f3;color:#75477c;font-weight:700}
+.rank-name{flex:1}.rank-points{font-weight:700;color:#75477c}
+.student-rank-card{padding:20px;margin-top:20px;border:1px solid #eee6ef;border-radius:20px;background:#fff}
+.student-rank-card .rank-highlight{padding:14px 16px;margin-bottom:12px;border-radius:14px;background:#f8edf9;color:#693f70}
+.student-rank-card .rank-highlight strong{font-size:24px}
+.student-ranking .rank-item.me{background:#f8edf9;border-radius:12px;padding-left:12px;padding-right:12px}
+
+.modal{position:fixed;inset:0;display:grid;place-items:center;padding:20px;background:rgba(36,27,37,.6)}
+.modal-card{position:relative;width:min(410px,100%);padding:28px;border-radius:22px;background:#fff}
+.close{position:absolute;top:9px;right:14px;border:0;background:transparent;color:#888;font-size:28px}
+
+@media(max-width:650px){
+.login-card{padding:28px 22px}.topbar{padding:0 5%}.container{width:92%;margin-top:25px}
+.welcome{padding:22px}.welcome h1{font-size:26px}.point-circle{width:100px;height:100px}
+.point-circle strong{font-size:27px}.stats{grid-template-columns:1fr}.search{max-width:160px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginPage" class="screen">
+<div class="login-card">
+<div class="logo">✦</div>
+<div class="eyebrow">CLASSPOINT</div>
+<h1>Sistem Poin Kelas</h1>
+<p class="muted">Masuk menggunakan akunmu.</p>
+
+<div class="tabs">
+<button id="studentTab" class="tab active" type="button">Siswa</button>
+<button id="adminTab" class="tab" type="button">Admin</button>
+</div>
+
+<form id="loginForm">
+<label id="idLabel">ID Siswa</label>
+<input id="loginId" required placeholder="Contoh: siswa01">
+<label>Password</label>
+<input id="loginPassword" type="password" required placeholder="Masukkan password">
+<button class="primary" type="submit">Masuk →</button>
+<div id="loginError" class="error"></div>
+</form>
+
+<div class="demo">Admin: <b>admin</b> / <b>admin123</b></div>
+</div>
+</div>
+
+<div id="dashboardPage" class="hidden">
+
+<header class="topbar">
+<div>
+<div class="eyebrow">CLASSPOINT</div>
+<h2 id="pageTitle">Dashboard</h2>
+</div>
+<button id="logoutBtn" class="logout">Keluar</button>
+</header>
+
+<main class="container">
+
+<section id="studentDashboard" class="hidden">
+
+<div class="welcome">
+<div>
+<p class="muted">Selamat datang,</p>
+<h1 id="studentName">—</h1>
+<p class="muted">ID: <b id="studentId">—</b></p>
+</div>
+
+<div class="point-circle">
+<strong id="studentPoints">0</strong>
+<span>POIN</span>
+</div>
+</div>
+
+<div class="section-title"><h3>Riwayat Poin</h3></div>
+<div id="studentHistory" class="history"></div>
+<div class="student-rank-card">
+  <div class="eyebrow">RANKING KELAS</div>
+  <div id="studentRankHighlight" class="rank-highlight">Menghitung peringkat...</div>
+  <div id="studentRanking" class="student-ranking"></div>
+</div>
+
+</section>
+
+<section id="adminDashboard" class="hidden">
+
+<div class="stats">
+<div class="stat"><span>Jumlah siswa</span><strong>36</strong></div>
+<div class="stat"><span>Total poin</span><strong id="totalPoints">0</strong></div>
+<div class="stat"><span>Rata-rata</span><strong id="averagePoints">0</strong></div>
+</div>
+
+<div class="panel">
+<div class="section-title">
+<h3>Daftar Siswa</h3>
+<input id="searchStudent" class="search" placeholder="Cari siswa...">
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>No</th><th>Nama</th><th>Poin</th><th>Aksi</th></tr>
+</thead>
+<tbody id="studentTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="panel">
+<div class="section-title"><h3>🏆 Ranking Kelas</h3></div>
+<div id="ranking"></div>
+</div>
+
+</section>
+</main>
+</div>
+
+<div id="pointModal" class="modal hidden">
+
+<div class="modal-card">
+<button id="closeModal" class="close" type="button">×</button>
+
+<div class="eyebrow">KELOLA POIN</div>
+<h2 id="modalStudentName">Siswa</h2>
+
+<form id="pointForm">
+<label>Jumlah poin</label>
+<input id="pointAmount" type="number" required placeholder="Contoh: 10 atau -5">
+
+<label>Keterangan</label>
+<input id="pointReason" required placeholder="Contoh: Mengumpulkan tugas">
+
+<button class="primary" type="submit">Simpan Poin</button>
+</form>
+</div>
+
+</div>
+
+<script>
+const STUDENTS = [
+  {id:"siswa01", name:"Siswa 01", password:"pass01"},
+  {id:"siswa02", name:"Siswa 02", password:"pass02"},
+  {id:"siswa03", name:"Siswa 03", password:"pass03"},
+  {id:"siswa04", name:"Siswa 04", password:"pass04"},
+  {id:"siswa05", name:"Siswa 05", password:"pass05"},
+  {id:"siswa06", name:"Siswa 06", password:"pass06"},
+  {id:"siswa07", name:"Siswa 07", password:"pass07"},
+  {id:"siswa08", name:"Siswa 08", password:"pass08"},
+  {id:"siswa09", name:"Siswa 09", password:"pass09"},
+  {id:"siswa10", name:"Siswa 10", password:"pass10"},
+  {id:"siswa11", name:"Siswa 11", password:"pass11"},
+  {id:"siswa12", name:"Siswa 12", password:"pass12"},
+  {id:"siswa13", name:"Siswa 13", password:"pass13"},
+  {id:"siswa14", name:"Siswa 14", password:"pass14"},
+  {id:"siswa15", name:"Siswa 15", password:"pass15"},
+  {id:"siswa16", name:"Siswa 16", password:"pass16"},
+  {id:"siswa17", name:"Siswa 17", password:"pass17"},
+  {id:"siswa18", name:"Siswa 18", password:"pass18"},
+  {id:"siswa19", name:"Siswa 19", password:"pass19"},
+  {id:"siswa20", name:"Siswa 20", password:"pass20"},
+  {id:"siswa21", name:"Siswa 21", password:"pass21"},
+  {id:"siswa22", name:"Siswa 22", password:"pass22"},
+  {id:"siswa23", name:"Siswa 23", password:"pass23"},
+  {id:"siswa24", name:"Siswa 24", password:"pass24"},
+  {id:"siswa25", name:"Siswa 25", password:"pass25"},
+  {id:"siswa26", name:"Siswa 26", password:"pass26"},
+  {id:"siswa27", name:"Siswa 27", password:"pass27"},
+  {id:"siswa28", name:"Siswa 28", password:"pass28"},
+  {id:"siswa29", name:"Siswa 29", password:"pass29"},
+  {id:"siswa30", name:"Siswa 30", password:"pass30"},
+  {id:"siswa31", name:"Siswa 31", password:"pass31"},
+  {id:"siswa32", name:"Siswa 32", password:"pass32"},
+  {id:"siswa33", name:"Siswa 33", password:"pass33"},
+  {id:"siswa34", name:"Siswa 34", password:"pass34"},
+  {id:"siswa35", name:"Siswa 35", password:"pass35"},
+  {id:"siswa36", name:"Siswa 36", password:"pass36"}
+];
+
+const ADMIN={id:"admin",password:"admin123"};
+const KEY="classpoint_data";
+
+let data=JSON.parse(localStorage.getItem(KEY)||"null");
+
+if(!data){
+data={};
+STUDENTS.forEach(s=>{
+data[s.id]={points:0,history:[]};
+});
+save();
+}
+
+// Membersihkan riwayat Siswa 01 yang sudah terlanjur tersimpan, tanpa mengubah poin.
+if(!localStorage.getItem("history_cleanup_v1")){
+  if(data.siswa01) data.siswa01.history=[];
+  localStorage.setItem("history_cleanup_v1","1");
+}
+
+// Pastikan semua akun memiliki data tanpa menghapus poin/riwayat yang sudah tersimpan.
+STUDENTS.forEach(s=>{
+  if(!data[s.id]){
+    data[s.id]={points:0,history:[]};
+  }
+  if(!Array.isArray(data[s.id].history)){
+    data[s.id].history=[];
+  }
+  if(typeof data[s.id].points!=="number"){
+    data[s.id].points=0;
+  }
+});
+save();
+
+let mode="student";
+let currentUser=null;
+let selectedStudent=null;
+
+const $=id=>document.getElementById(id);
+
+$("studentTab").onclick=()=>{
+mode="student";
+$("studentTab").classList.add("active");
+$("adminTab").classList.remove("active");
+$("idLabel").textContent="ID Siswa";
+$("loginId").placeholder="Contoh: siswa01";
+};
+
+$("adminTab").onclick=()=>{
+mode="admin";
+$("adminTab").classList.add("active");
+$("studentTab").classList.remove("active");
+$("idLabel").textContent="ID Admin";
+$("loginId").placeholder="Contoh: admin";
+};
+
+$("loginForm").onsubmit=e=>{
+e.preventDefault();
+
+const id=$("loginId").value.trim().toLowerCase();
+const pw=$("loginPassword").value;
+
+$("loginError").textContent="";
+
+if(mode==="admin"){
+if(id===ADMIN.id&&pw===ADMIN.password){
+currentUser="admin";
+openDashboard();
+renderAdmin();
+}else{
+$("loginError").textContent="ID atau password admin salah.";
+}
+return;
+}
+
+const student=STUDENTS.find(s=>s.id===id&&s.password===pw);
+
+if(!student){
+$("loginError").textContent="ID atau password siswa salah.";
+return;
+}
+
+currentUser=student.id;
+openDashboard();
+renderStudent(student.id);
+};
+
+function openDashboard(){
+$("loginPage").classList.add("hidden");
+$("dashboardPage").classList.remove("hidden");
+$("loginForm").reset();
+}
+
+$("logoutBtn").onclick=()=>{
+currentUser=null;
+$("dashboardPage").classList.add("hidden");
+$("loginPage").classList.remove("hidden");
+};
+
+window.addEventListener("storage",()=>{
+  data=JSON.parse(localStorage.getItem(KEY)||"{}");
+  STUDENTS.forEach(s=>{
+    if(!data[s.id]) data[s.id]={points:0,history:[]};
+  });
+  if(currentUser==="admin") renderAdmin();
+  else if(currentUser) renderStudent(currentUser);
+});
+
+function renderStudent(id){
+
+$("studentDashboard").classList.remove("hidden");
+$("adminDashboard").classList.add("hidden");
+$("pageTitle").textContent="Dashboard Siswa";
+
+const student=STUDENTS.find(s=>s.id===id);
+const d=data[id] || {points:0,history:[]};
+
+$("studentName").textContent=student.name;
+$("studentId").textContent=student.id;
+$("studentPoints").textContent=d.points;
+
+const h=d.history.slice().reverse();
+
+$("studentHistory").innerHTML=h.length
+?h.map(x=>`
+<div class="history-item">
+<div>
+<strong>${esc(x.reason)}</strong>
+<div class="history-date">${x.date}</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<span class="${x.amount>=0?"plus":"minus"}">
+${x.amount>=0?"+":""}${x.amount}
+</span>
+<button type="button" class="delete-history"
+onclick="deleteHistory('${id}',${d.history.indexOf(x)})"
+title="Hapus riwayat">🗑️</button>
+</div>
+</div>`).join("")
+:`<div class="history-item">
+<span class="muted">Belum ada riwayat poin.</span>
+</div>`;
+
+renderStudentRanking(id);
+}
+
+function renderStudentRanking(id){
+const list=STUDENTS
+.map(s=>({...s,points:(data[s.id]||{points:0}).points}))
+.sort((a,b)=>b.points-a.points);
+
+const myRank=list.findIndex(s=>s.id===id)+1;
+const myPoints=(data[id]||{points:0}).points;
+
+$("studentRankHighlight").innerHTML=
+`<strong>#${myRank}</strong> dari ${STUDENTS.length} siswa · ${myPoints} poin`;
+
+$("studentRanking").innerHTML=list.map((s,i)=>`
+<div class="rank-item ${s.id===id?"me":""}">
+<div class="rank-number">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
+<div class="rank-name"><strong>${esc(s.name)}</strong>${s.id===id?" <small>(Kamu)</small>":""}</div>
+<div class="rank-points">${s.points} poin</div>
+</div>`).join("");
+}
+
+function deleteHistory(studentId, historyIndex){
+  const student = STUDENTS.find(s=>s.id===studentId);
+  if(!student) return;
+
+  const item = data[studentId].history[historyIndex];
+  if(!item) return;
+
+  const ok = confirm(
+    `Hapus riwayat "${item.reason}" (${item.amount>=0?"+":""}${item.amount})?\\n\\nPoin siswa akan ikut dikembalikan.`
+  );
+  if(!ok) return;
+
+  // Reverse the transaction so the current point total stays correct.
+  data[studentId].points -= Number(item.amount);
+  data[studentId].history.splice(historyIndex,1);
+
+  save();
+
+  if(currentUser === "admin"){
+    renderAdmin();
+  }else{
+    renderStudent(studentId);
+  }
+}
+
+function renderAdmin(){
+
+$("adminDashboard").classList.remove("hidden");
+$("studentDashboard").classList.add("hidden");
+$("pageTitle").textContent="Dashboard Admin";
+
+renderTable();
+updateStats();
+renderRanking();
+}
+
+function renderTable(){
+
+const q=$("searchStudent").value.toLowerCase();
+
+const list=STUDENTS.filter(s=>
+s.name.toLowerCase().includes(q)
+);
+
+$("studentTable").innerHTML=list.map(s=>`
+<tr>
+<td>${STUDENTS.indexOf(s)+1}</td>
+<td>
+<strong>${s.name}</strong>
+<br>
+<small>${s.id}</small>
+</td>
+<td><strong>${data[s.id].points}</strong></td>
+<td>
+<button class="manage" onclick="openPoint('${s.id}')">+ / − Poin</button>
+<button class="clear-history" onclick="clearHistory('${s.id}')">🗑️ Riwayat</button>
+</td>
+</tr>
+`).join("");
+}
+
+window.clearHistory=id=>{
+  const student=STUDENTS.find(s=>s.id===id);
+  if(!student) return;
+  if(!confirm(`Hapus semua riwayat poin ${student.name}?\n\nJumlah poin saat ini tidak akan berubah.`)) return;
+  data[id].history=[];
+  save();
+  renderAdmin();
+};
+
+$("searchStudent").oninput=renderTable;
+
+function updateStats(){
+
+const total=STUDENTS.reduce(
+(n,s)=>n+data[s.id].points,0
+);
+
+$("totalPoints").textContent=total;
+$("averagePoints").textContent=(total/36).toFixed(1);
+}
+
+function renderRanking(){
+
+const list=STUDENTS
+.map(s=>({...s,points:data[s.id].points}))
+.sort((a,b)=>b.points-a.points);
+
+$("ranking").innerHTML=list.map((s,i)=>`
+<div class="rank-item">
+<div class="rank-number">
+${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}
+</div>
+<div class="rank-name"><strong>${s.name}</strong></div>
+<div class="rank-points">${s.points} poin</div>
+</div>
+`).join("");
+}
+
+window.openPoint=id=>{
+
+selectedStudent=id;
+
+const student=STUDENTS.find(s=>s.id===id);
+
+$("modalStudentName").textContent=student.name;
+$("pointAmount").value="";
+$("pointReason").value="";
+$("pointModal").classList.remove("hidden");
+};
+
+$("closeModal").onclick=()=>{
+$("pointModal").classList.add("hidden");
+};
+
+$("pointModal").onclick=e=>{
+if(e.target===$("pointModal")){
+$("pointModal").classList.add("hidden");
+}
+};
+
+$("pointForm").onsubmit=e=>{
+
+e.preventDefault();
+
+const amount=Number($("pointAmount").value);
+const reason=$("pointReason").value.trim();
+
+if(!amount||!reason)return;
+
+data[selectedStudent].points+=amount;
+
+data[selectedStudent].history.push({
+amount:amount,
+reason:reason,
+date:new Date().toLocaleString("id-ID")
+});
+
+save();
+
+$("pointModal").classList.add("hidden");
+
+renderAdmin();
+};
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(data));
+}
+
+function esc(s){
+return String(s).replace(
+/[&<>"']/g,
+c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[c])
+);
+}
+</script>
+
+</body>
+</html>
